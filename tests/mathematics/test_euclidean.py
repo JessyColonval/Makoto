@@ -15,7 +15,7 @@ class TestEuclidean(TestCase):
     points.
     """
 
-    def test_distance_no_python_list(self):
+    def test_distance_no_python_lists(self):
         """
         Verifies that an exception is thrown when python lists are used.
         """
@@ -23,7 +23,7 @@ class TestEuclidean(TestCase):
         p1 = [9, 11, 13]
         self.assertRaises(TypeError, Euclidean.distance, p0, p1)
 
-    def test_distance_no_int_array(self):
+    def test_distance_no_int_arrays(self):
         """
         Verifies that an exception is thrown when arrays of integers are used.
         """
