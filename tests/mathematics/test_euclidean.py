@@ -39,6 +39,9 @@ class TestEuclidean(TestCase):
         p0 = array([3, 7, 11], dtype=float64)
         p1 = array([5, 9], dtype=float64)
         self.assertRaises(ValueError, Euclidean.distance, p0, p1)
+        p0 = array([3, 7], dtype=float64)
+        p1 = array([5, 9, 11], dtype=float64)
+        self.assertRaises(ValueError, Euclidean.distance, p0, p1)
 
     def test_distance(self):
         """
@@ -85,9 +88,8 @@ class TestEuclidean(TestCase):
         for length in range(1, 100):
             p0 = array([random() for _ in range(0, length)], dtype=float64)
             p1 = p0
-            result = Euclidean.distance(p0, p1)
-            expected = 0.0
-            self.assertEqual(result, expected)
+            actual = Euclidean.distance(p0, p1)
+            self.assertEqual(0.0, actual)
 
     def test_distance_same_negative_coord(self):
         """
