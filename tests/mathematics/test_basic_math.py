@@ -4,7 +4,7 @@ Written by Jessy Colonval.
 from unittest import TestCase
 from random import random
 from numpy import array, float64, int64
-from src.basic_math import BasicMath
+from src.mathematics.basic_math import BasicMath
 
 
 class TestBasicMath(TestCase):
