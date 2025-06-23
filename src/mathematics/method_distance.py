@@ -26,7 +26,7 @@ class MethodDistance():
     @staticmethod
     @abstractmethod
     def distance(a: npt.NDArray[np.float64],
-                 b: npt.NDArray[np.float64]) -> float:
+                 b: npt.NDArray[np.float64]) -> float:  # pragma: no cover
         """
         Calculates the distance between two points with identical dimensions.
 
@@ -42,7 +42,8 @@ class MethodDistance():
     @abstractmethod
     def subdistance(a: npt.NDArray[np.float64],
                     b: npt.NDArray[np.float64],
-                    indices: npt.NDArray[np.int64]) -> float:
+                    indices: npt.NDArray[np.int64]
+                    ) -> float:  # pragma: no cover
         """
         Calculates the distance between two points with identical dimensions
         using only part of their values.
@@ -77,7 +78,7 @@ class Euclidean(MethodDistance):
     @staticmethod
     @njit(float64(float64[:], float64[:]), fastmath=True)
     def distance(a: npt.NDArray[np.float64],
-                 b: npt.NDArray[np.float64]) -> float:
+                 b: npt.NDArray[np.float64]) -> float:  # pragma: no cover
         """
         Calculates the Euclidean distance between two points with identical
         dimensions.
@@ -112,7 +113,8 @@ class Euclidean(MethodDistance):
     @njit(float64(float64[:], float64[:], int64[:]), fastmath=True)
     def subdistance(a: npt.NDArray[np.float64],
                     b: npt.NDArray[np.float64],
-                    indices: npt.NDArray[np.int64]) -> float:
+                    indices: npt.NDArray[np.int64]
+                    ) -> float:  # pragma: no cover
         """
         Calculates the euclidean distance between two points of identical
         dimensions using only part of the values.
@@ -168,7 +170,7 @@ class Manhattan(MethodDistance):
     @staticmethod
     @njit(float64(float64[:], float64[:]), fastmath=True)
     def distance(a: npt.NDArray[np.float64],
-                 b: npt.NDArray[np.float64]) -> float:
+                 b: npt.NDArray[np.float64]) -> float:  # pragma: no cover
         """
         Calculates the Manhattan distance between two points with identical
         dimensions.
@@ -202,7 +204,8 @@ class Manhattan(MethodDistance):
     @njit(float64(float64[:], float64[:], int64[:]), fastmath=True)
     def subdistance(a: npt.NDArray[np.float64],
                     b: npt.NDArray[np.float64],
-                    indices: npt.NDArray[np.int64]) -> float:
+                    indices: npt.NDArray[np.int64]
+                    ) -> float:  # pragma: no cover
         """
         Calculates the Manhattan distance between two points with identical
         dimensions by using only part of their values.
@@ -302,10 +305,16 @@ class Absolute(MethodDistance):
         Raises
         ------
         ValueError
-            when the points doesn't have the same dimension.
+            when the points doesn't have the same dimension or when an index
+            isn't in the coordinates' interval.
         """
         if len(a) != len(b):
             raise ValueError("Points must have same dimension.")
+        if len(a) == 0:
+            return 0
+        if max(indices) >= len(a) or min(indices) < 0:
+            raise ValueError("At least one of indices is greater than the",
+                             " dimension of the points.")
 
         return sum(
             1

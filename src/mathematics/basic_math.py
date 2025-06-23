@@ -10,7 +10,9 @@ class BasicMath():
 
     @staticmethod
     @njit(float64(float64[:], float64[:]), fastmath=True)
-    def dot(x: ndarray[float64], y: ndarray[float64]) -> int:
+    def dot(x: ndarray[float64],
+            y: ndarray[float64]
+            ) -> int:  # pragma: no cover
         """
         Don't replace with sum(...), numba doesn't support it.
         """
@@ -23,8 +25,9 @@ class BasicMath():
 
     @staticmethod
     @njit(fastmath=True)
-    def equation_nD(x: ndarray[float64], y: ndarray[float64]
-                    ) -> (float, float):
+    def equation_nD(x: ndarray[float64],
+                    y: ndarray[float64]
+                    ) -> (float, float):  # pragma: no cover
         """
         Computes the equation 'ax + b' of a segment between two points.
 
