@@ -1,3 +1,7 @@
+![Python](https://img.shields.io/badge/python-3.10+-blue)
+![License](https://img.shields.io/badge/license-Apache%202.0-green)
+![Tests](https://github.com/JessyColonval/Makoto/actions/workflows/python-app.yml/badge.svg)
+
 # Multidimensional Adaptative kNN over Tracking Outliers (Makoto)
 
 
