@@ -3,15 +3,14 @@ Written by Jessy Colonval.
 """
 from unittest import TestCase
 
-from random import random, randint, shuffle
-from numba.core.errors import TypingError
 import numpy as np
-from numpy.testing import assert_allclose, assert_array_equal
-
 from src.modelisation.point import Point
 
 
 class TestPoint(TestCase):
+    """
+    Unit tests for functions in the Point's object.
+    """
 
     def test_init_w_float64_and_int16(self):
         """
