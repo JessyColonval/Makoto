@@ -1,17 +1,17 @@
 """
 Written by Jessy Colonval.
 """
-from numpy import ndarray
-from numba import jit, njit, float64
 import numpy as np
+import numpy.typing as npt
+from numba import jit, njit, float64
 
 
 class BasicMath():
 
     @staticmethod
     @njit(float64(float64[:], float64[:]), fastmath=True)
-    def dot(x: ndarray[float64],
-            y: ndarray[float64]
+    def dot(x: npt.NDArray[np.float64],
+            y: npt.NDArray[np.float64]
             ) -> int:  # pragma: no cover
         """
         Don't replace with sum(...), numba doesn't support it.
@@ -25,8 +25,8 @@ class BasicMath():
 
     @staticmethod
     @njit(fastmath=True)
-    def equation_nD(x: ndarray[float64],
-                    y: ndarray[float64]
+    def equation_nD(x: npt.NDArray[np.float64],
+                    y: npt.NDArray[np.float64]
                     ) -> (float, float):  # pragma: no cover
         """
         Computes the equation 'ax + b' of a segment between two points.
@@ -56,8 +56,9 @@ class BasicMath():
     @staticmethod
     @jit(float64(float64[:], float64[:], float64[:]), forceobj=True,
          fastmath=True)
-    def distance_line_nD(start: ndarray[float64], end: ndarray[float64],
-                         point: ndarray[float64]) -> float:
+    def distance_line_nD(start: npt.NDArray[np.float64],
+                         end: npt.NDArray[np.float64],
+                         point: npt.NDArray[np.float64]) -> float:
         """
         Computes the distance between a point and a segment.
 
