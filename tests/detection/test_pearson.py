@@ -193,8 +193,9 @@ class TestPearson(TestCase):
     )
     def test_matrix_from_numpy_good_shape(self, data):
         """
-        Verifies that all correlation scores in the matrix are between -1.0 and
-        1.0 inclusive.
+        Verifies that all correlation scores in the matrix are in the interval
+        [-1.0;1.0] and equal to 1.0 when the both attributes are identical.
+        Plus, verifies is the matrix is symetric.
         """
         tol = 1e-9  # Epsilon
 
@@ -280,8 +281,9 @@ class TestPearson(TestCase):
     )
     def test_matrix_dataframe_good_shape(self, data):
         """
-        Verifies that all correlation scores in the matrix are between -1.0 and
-        1.0 inclusive when the datasets are store in a DataFrame.
+        Verifies that all correlation scores in the matrix are in the interval
+        [-1.0;1.0] and equal to 1.0 when the both attributes are identical.
+        Plus, verifies is the matrix is symetric.
         """
         tol = 1e-9  # Epsilon
 
