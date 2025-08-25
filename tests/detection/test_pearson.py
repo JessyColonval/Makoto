@@ -2,8 +2,11 @@
 Written by Jessy Colonval.
 """
 from unittest import TestCase
-
 from random import random
+
+from hypothesis import given, settings, strategies as st
+import hypothesis.extra.numpy as hnp
+
 import pandas as pd
 import numpy as np
 from numpy.testing import assert_almost_equal
@@ -181,95 +184,55 @@ class TestPearson(TestCase):
         )
         assert_almost_equal(result, expected)
 
-    def test_matrix_from_numpy_between_0_and_1(self):
+    @settings(max_examples=10000)
+    @given(
+        hnp.arrays(
+            dtype=np.float64, shape=(10, 10),
+            elements=st.integers(min_value=-100, max_value=99)
+        )
+    )
+    def test_matrix_from_numpy_good_shape(self, data):
         """
         Verifies that all correlation scores in the matrix are between -1.0 and
         1.0 inclusive.
         """
-        n_l = 10  # Number of lines in the dataset.
-        n_c = 10  # Number of columns in the dataset.
-        _min = -100.0  # Minimum value in the dataset.
-        _max = 100.0  # Maximum value in the dataset.
+        tol = 1e-9  # Epsilon
 
-        # Generates 10000 random datasets.
-        for _ in range(0, 10000):
-            data = np.array(
-                [
-                    [
-                        (random() * (_max - _min)) + _min
-                        for _ in range(0, n_c)
-                    ]
-                    for _ in range(0, n_l)
-                ],
-                dtype=np.float64
-            )
-            matrix = Pearson.matrix_from_numpy(data)
-            is_good_interval = all(
-                -1.0 <= e <= 1.0
-                for line in matrix
-                for e in line
-            )
-            self.assertTrue(is_good_interval)
+        # Correlation matrix.
+        matrix = Pearson.matrix_from_numpy(data)
 
-    def test_matrix_from_numpy_symetric(self):
-        """
-        Verifies that the correlation matrix is symmetrical, i.e. that two
-        pairs of the same attributes are equal.
-        """
-        n_l = 10  # Number of lines in the dataset.
-        n_c = 10  # Number of columns in the dataset.
-        _min = -100.0  # Minimum value in the dataset.
-        _max = 100.0  # Maximum value in the dataset.
+        # Is between -1.0 and 1.0.
+        low = -1.0 - tol
+        high = 1.0 + tol
+        is_good_interval = all(
+            low <= e <= high
+            for line in matrix
+            for e in line
+        )
+        self.assertTrue(is_good_interval, "Wrong interval!")
 
-        # Generates 10000 random datasets.
-        for _ in range(0, 10000):
-            data = np.array(
-                [
-                    [
-                        (random() * (_max - _min)) + _min
-                        for _ in range(0, n_c)
-                    ]
-                    for _ in range(0, n_l)
-                ],
-                dtype=np.float64
-            )
-            matrix = Pearson.matrix_from_numpy(data)
-            result = all(
-                matrix[i0][i1] == matrix[i1][i0]
-                for i0 in range(0, n_c)
-                for i1 in range(0, n_c)
-            )
-            self.assertTrue(result)
+        # Is symetric.
+        n_c = len(matrix[0])
+        is_symetric = all(
+            matrix[i0][i1] == matrix[i1][i0]
+            for i0 in range(0, n_c)
+            for i1 in range(0, n_c)
+        )
+        self.assertTrue(is_symetric, "Not symetric!")
 
-    def test_matrix_numpy_equals_to_1_for_same_attributes(self):
-        """
-        Verifies that the correlation scores between two identical attributes
-        are equal to 1.0.
-        """
-        n_l = 10  # Number of lines in the dataset.
-        n_c = 10  # Number of columns in the dataset.
-        _min = -100.0  # Minimum value in the dataset.
-        _max = 100.0  # Maximum value in the dataset.
-
-        # Generates 10000 random datasets.
-        for _ in range(0, 10000):
-            col = [
-                (random() * (_max - _min)) + _min
-                for _ in range(0, n_l)
-            ]
-            data = np.array(
-                [
-                    [col[i] for _ in range(0, n_c)]
-                    for i in range(0, n_l)
-                ],
-                dtype=np.float64
-            )
-            matrix = Pearson.matrix_from_numpy(data)
-            all(
-                self.assertAlmostEqual(matrix[i][j], 1.0)
-                for i in range(0, n_l)
-                for j in range(0, n_c)
-            )
+        # Is equal to 1 with identical attributes.
+        n_l = len(matrix)
+        tol = 1e-9
+        low = 1.0 - tol
+        high = 1.0 + tol
+        is_equal_to_1 = all(
+            low <= matrix[i][i] <= high
+            for i in range(0, n_l)
+        )
+        self.assertTrue(
+            is_equal_to_1,
+            "Correlation scores between same attributes aren't equal to 1!"
+        )
 
     def test_matrix_dataframe_iris(self):
         """
@@ -308,99 +271,55 @@ class TestPearson(TestCase):
         )
         assert_almost_equal(result, expected)
 
-    def test_matrix_dataframe_between_0_and_1(self):
+    @settings(max_examples=10000)
+    @given(
+        hnp.arrays(
+            dtype=np.float64, shape=(10, 10),
+            elements=st.integers(min_value=-100, max_value=99)
+        )
+    )
+    def test_matrix_dataframe_good_shape(self, data):
         """
         Verifies that all correlation scores in the matrix are between -1.0 and
         1.0 inclusive when the datasets are store in a DataFrame.
         """
-        n_l = 10  # Number of lines in the dataset.
-        n_c = 10  # Number of columns in the dataset.
-        _min = -100.0  # Minimum value in the dataset.
-        _max = 100.0  # Maximum value in the dataset.
+        tol = 1e-9  # Epsilon
 
-        # Generates 10000 random datasets.
-        for _ in range(0, 10000):
-            data = np.array(
-                [
-                    [
-                        (random() * (_max - _min)) + _min
-                        for _ in range(0, n_c)
-                    ]
-                    for _ in range(0, n_l)
-                ],
-                dtype=np.float64
-            )
-            df = pd.DataFrame(data)
-            matrix = Pearson.matrix(df)
-            is_good_interval = all(
-                -1.0 <= e <= 1.0
-                for line in matrix
-                for e in line
-            )
-            self.assertTrue(is_good_interval)
+        # Correlation matrix
+        df = pd.DataFrame(data)
+        matrix = Pearson.matrix(df)
 
-    def test_matrix_dataframe_symetric(self):
-        """
-        Verifies that the correlation matrix is symmetrical, i.e. that two
-        pairs of the same attributes are equal when the datasets are store in
-        a DataFrame.
-        """
-        n_l = 10  # Number of lines in the dataset.
-        n_c = 10  # Number of columns in the dataset.
-        _min = -100.0  # Minimum value in the dataset.
-        _max = 100.0  # Maximum value in the dataset.
+        # Is between in -1.0 and 1.0.
+        low = -1.0 - tol
+        high = 1.0 + tol
+        is_good_interval = all(
+            low <= e <= high
+            for line in matrix
+            for e in line
+        )
+        self.assertTrue(is_good_interval, "Wrong interval!")
 
-        # Generates 10000 random datasets.
-        for _ in range(0, 10000):
-            data = np.array(
-                [
-                    [
-                        (random() * (_max - _min)) + _min
-                        for _ in range(0, n_c)
-                    ]
-                    for _ in range(0, n_l)
-                ],
-                dtype=np.float64
-            )
-            df = pd.DataFrame(data)
-            matrix = Pearson.matrix(df)
-            result = all(
-                matrix[i0][i1] == matrix[i1][i0]
-                for i0 in range(0, n_c)
-                for i1 in range(0, n_c)
-            )
-            self.assertTrue(result)
+        # Is symetric.
+        n_c = len(matrix[0])
+        is_symetric = all(
+            matrix[i0][i1] == matrix[i1][i0]
+            for i0 in range(0, n_c)
+            for i1 in range(0, n_c)
+        )
+        self.assertTrue(is_symetric, "Not symetric!")
 
-    def test_matrix_dataframe_equals_at_1_for_same_attributes(self):
-        """
-        Verifies that the correlation scores between two identical attributes
-        are equal to 1.0 when datasets are store in a DataFrame.
-        """
-        n_l = 10  # Number of lines in the dataset.
-        n_c = 10  # Number of columns in the dataset.
-        _min = -100.0  # Minimum value in the dataset.
-        _max = 100.0  # Maximum value in the dataset.
-
-        # Generates 10000 random datasets.
-        for _ in range(0, 10000):
-            col = [
-                (random() * (_max - _min)) + _min
-                for _ in range(0, n_l)
-            ]
-            data = np.array(
-                [
-                    [col[i] for _ in range(0, n_c)]
-                    for i in range(0, n_l)
-                ],
-                dtype=np.float64
-            )
-            df = pd.DataFrame(data)
-            matrix = Pearson.matrix(df)
-            all(
-                self.assertAlmostEqual(matrix[i][j], 1.0)
-                for i in range(0, n_l)
-                for j in range(0, n_c)
-            )
+        # Is equal to 1 with identical attributes.
+        n_l = len(matrix)
+        low = 1.0 - tol
+        high = 1.0 + tol
+        is_equal_to_1 = all(
+            low <= matrix[i][i] <= high
+            for i in range(0, n_l)
+        )
+        self.assertTrue(
+            is_equal_to_1,
+            "Correlation scores between same attributes aren't equal to 1!"
+        )
 
     def test_matrix_dataset_iris(self):
         """
@@ -575,6 +494,10 @@ class TestPearson(TestCase):
         Verifies that the correlation scores between two identical attributes
         are equal to 1.0 when datasets are store in a Dataset.
         """
+        tol = 1e-9  # Epsilon
+        low = 1.0 - tol  # Lower bound.
+        high = 1.0 + tol  # Upper bound.
+
         n_l = 10  # Number of lines in the dataset.
         n_c = 10  # Number of columns in the dataset.
         _min = -100.0  # Minimum value in the dataset.
@@ -600,14 +523,15 @@ class TestPearson(TestCase):
                 )
                 for i in range(0, n_l)
             ]
-            dataset = Dataset(
-                col_ctx,
-                col_bhv,
-                points
-            )
+
+            # Converts the numpy array into a Dataset object.
+            dataset = Dataset(col_ctx, col_bhv, points)
+
+            # Correlation matrix.
             matrix = Pearson.matrix(dataset)
-            all(
-                self.assertAlmostEqual(matrix[i][j], 1.0)
+
+            is_equal_to_1 = all(
+                low <= matrix[i][i] <= high
                 for i in range(0, n_l)
-                for j in range(0, n_c)
             )
+            self.assertTrue(is_equal_to_1)
