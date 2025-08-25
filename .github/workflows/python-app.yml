@@ -9,6 +9,7 @@ on:
       - 'src/**/*.py'
       - 'tests/**/*.py'
       - '.github/workflows/python-app.yml'
+      - 'requirements.txt'
 
 permissions:
   contents: read
