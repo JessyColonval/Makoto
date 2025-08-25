@@ -1,4 +1,4 @@
-![Python](https://img.shields.io/badge/python-3.10+-blue)
+![Python](https://img.shields.io/badge/python-3.8-blue)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![Tests](https://github.com/JessyColonval/Makoto/actions/workflows/python-app.yml/badge.svg)
 
