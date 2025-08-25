@@ -1,5 +1,5 @@
-numpy<1.20
+numpy
 pandas
 numba
-minepy
 hypothesis
+git+https://github.com/fcagnin/minepy3.git
